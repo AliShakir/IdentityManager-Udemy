@@ -66,8 +66,8 @@ namespace IdentityManager_Udemy.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(ApplicationUser user)
         {
-            if (ModelState.IsValid)
-            {
+            //if (ModelState.IsValid)
+            //{
                 var existingUser = _db.ApplicationUsers.FirstOrDefault(c => c.Id == user.Id);
                 if (existingUser == null)
                 {
@@ -87,7 +87,7 @@ namespace IdentityManager_Udemy.Controllers
                 _db.SaveChanges();
                 TempData[SD.Success] = "User has been edited successfully.";
                 return RedirectToAction(nameof(Index));
-            }
+            //}
 
             user.RoleList = _db.Roles.Select(c => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem
             {

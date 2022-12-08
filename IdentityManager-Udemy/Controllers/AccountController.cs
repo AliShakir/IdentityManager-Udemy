@@ -37,23 +37,28 @@ namespace IdentityManager_Udemy.Controllers
                 await _roleManager.CreateAsync(new IdentityRole("Admin"));
                 await _roleManager.CreateAsync(new IdentityRole("User"));
             }
-            List<SelectListItem> listItems = new List<SelectListItem>();
-            listItems.Add(new SelectListItem()
-            {
-                Value = "Admin",
-                Text = "Admin"
-            });
-            listItems.Add(new SelectListItem()
-            {
-                Value = "User",
-                Text = "User"
-            });
-            ViewData["ReturnUrl"] = returnUrl;
-            RegisterViewModel registerViewModel = new RegisterViewModel()
-            {
-                RoleList = listItems
-            };
-            return View(registerViewModel);
+            //List<SelectListItem> listItems = new List<SelectListItem>();
+            //listItems.Add(new SelectListItem()
+            //{
+            //    Value = "Admin",
+            //    Text = "Admin"
+            //});
+            //listItems.Add(new SelectListItem()
+            //{
+            //    Value = "User",
+            //    Text = "User"
+            //});
+            //listItems.Add(new SelectListItem()
+            //{
+            //    Value = "Test",
+            //    Text = "Test"
+            //});
+            //ViewData["ReturnUrl"] = returnUrl;
+            //RegisterViewModel registerViewModel = new RegisterViewModel()
+            //{
+            //    RoleList = listItems
+            //};
+            return View();
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -63,13 +68,14 @@ namespace IdentityManager_Udemy.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             returnUrl = returnUrl ?? Url.Content("~/");
             ModelState.Remove("RoleList");
-            if (ModelState.IsValid)
-            {
+            //if (ModelState.IsValid)
+            //{
                 var user = new ApplicationUser
                 {
                     UserName = model.Email,
                     Email = model.Email,
-                    Name = model.Name
+                    Name = model.Name,
+                    DateCreated = DateTime.Now
                 };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
@@ -95,7 +101,7 @@ namespace IdentityManager_Udemy.Controllers
                 }
                 AddErrors(result);
                 
-            }
+            //}
             List<SelectListItem> listItems = new List<SelectListItem>();
             listItems.Add(new SelectListItem()
             {
@@ -106,6 +112,11 @@ namespace IdentityManager_Udemy.Controllers
             {
                 Value = "User",
                 Text = "User"
+            });
+            listItems.Add(new SelectListItem()
+            {
+                Value = "Test",
+                Text = "Test"
             });
             ViewData["ReturnUrl"] = returnUrl;
             RegisterViewModel registerViewModel = new RegisterViewModel()

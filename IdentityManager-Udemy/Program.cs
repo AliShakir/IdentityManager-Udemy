@@ -1,7 +1,9 @@
 
 
+using IdentityManager_Udemy.Authorize;
 using IdentityManager_Udemy.Data;
 using IdentityManager_Udemy.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
@@ -32,6 +34,29 @@ builder.Services.AddAuthentication().AddFacebook(options =>
     options.AppId = "1567779000311859";
     options.AppSecret = "863926b767f7b8905fdb5592bb197935";
 });
+//
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("UserAndAdmin", policy => policy.RequireRole("Admin").RequireRole("User"));
+    options.AddPolicy("AdminCreateAccess", policy => policy.RequireRole("Admin").RequireClaim("create","True"));
+
+    options.AddPolicy("AdminCreateEditDeleteAccess", policy => policy.RequireRole("Admin").RequireClaim("create", "True")
+    .RequireClaim("edit","True").RequireClaim("delete", "True"));
+    
+    options.AddPolicy("AdminCreateEditDeleteAccessOrSuperAdmin", policy => policy.RequireAssertion(context => (
+        context.User.IsInRole("Admin") && context.User.HasClaim(c =>c.Type =="Create" && c.Value=="True")
+        && context.User.HasClaim(c=> c.Type == "Edit" && c.Value == "True")
+        && context.User.HasClaim(c => c.Type == "Delete" && c.Value == "True")
+    )|| context.User.IsInRole("SuperAdmin")));
+
+    options.AddPolicy("OnlySuperAdminChecker", policy => policy.Requirements.Add(new OnlySuperAdminChecker()));
+    options.AddPolicy("AdminWithMoreThan1000Days", policy => policy.Requirements.Add(new AdminWithMoreThan1000DaysRequirement(1000)));
+});
+//
+builder.Services.AddScoped<IAuthorizationHandler,AdminWithMoreThan1000DasyHandler>();
+//
+builder.Services.AddScoped<INumberOfDaysForAccount, NumberOfDaysForAccount>();
 //
 builder.Services.ConfigureApplicationCookie(opt =>
 {
